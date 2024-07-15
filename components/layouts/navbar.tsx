@@ -51,7 +51,6 @@ const Navbar: React.FC = () => {
             duration: 2000,
         })
         try {
-
             router.push('/auth/login');
         } catch (error) {
             console.log(error);

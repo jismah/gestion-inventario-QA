@@ -27,7 +27,7 @@ const NewClient: NextPage = () => {
         e.preventDefault();
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/products`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",

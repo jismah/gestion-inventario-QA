@@ -6,5 +6,5 @@ export const fetcherSWR = async (url: string) => {
         throw error
       }
     const data = await response.json();
-    return data.data;
+    return data;
 };

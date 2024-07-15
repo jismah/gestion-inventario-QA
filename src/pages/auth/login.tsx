@@ -17,7 +17,7 @@ const GoogleIcon = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) =>
 const Login: NextPage = () => {
 
     const { isOnline, isOffline, error } = useIsOnline();
-    const [email, setEmail] = useState('');
+    const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
 
     const [loading, setLoading] = useState(false);
@@ -25,7 +25,51 @@ const Login: NextPage = () => {
 
     const handleSignIn = async () => {
         setLoading(true);
-        router.push('/app/dashboard');
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/login`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: user,
+                    password: password
+                })
+            });
+            const json = await res.json();
+            console.log(json);
+
+            if (res.status === 200) {
+                router.push('/app/dashboard');
+                toast({
+                    title: "Bienvenido/a a SalesX",
+                    status: 'success',
+                    position: 'bottom',
+                    duration: 4000,
+                });
+            } else {
+                toast({
+                    title: json,
+                    description: res.statusText,
+                    status: 'error',
+                    position: 'bottom',
+                    duration: 4000,
+                });
+            }
+
+
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: 'Hubo un error!',
+                description: "Intentalo mas tarde...",
+                status: 'error',
+                position: 'bottom',
+                duration: 4000,
+            });
+        }
+
         setLoading(false);
     }
 
@@ -48,19 +92,19 @@ const Login: NextPage = () => {
                     <form className="mt-6">
                         <div className="col-span-full">
                             <label
-                                htmlFor="email"
+                                htmlFor="user"
                                 className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
                             >
-                                Email
+                                Usuario
                             </label>
                             <TextInput
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                autoComplete="email"
-                                placeholder="example@email.com"
+                                type="text"
+                                id="user"
+                                name="user"
+                                value={user}
+                                onChange={(e) => setUser(e.target.value)}
+                                autoComplete="user"
+                                placeholder="Usuario"
                                 className="mt-2 py-1"
                             />
                         </div>
