@@ -25,13 +25,14 @@ const NewClient: NextPage = () => {
     const createProduct = async (e: React.FormEvent) => {
         setLoaderProducto(true);
         e.preventDefault();
-
+    
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/products`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: 'include', // Incluir cookies de sesión
                 body: JSON.stringify({
                     name: newProductData.name,
                     description: newProductData.description,
@@ -42,31 +43,39 @@ const NewClient: NextPage = () => {
             });
             const json = await res.json();
             console.log(json);
-
-            setNewProductData({
-                name: "",
-                description: "",
-                category: "",
-                price: 0,
-                quantity: 0,
-            });
-
-            toast({
-                title: 'Producto Creado!',
-                description: "Se creo el producto correctamente.",
-                status: 'success',
-                position: 'bottom',
-                duration: 4000,
-            });
-
-
-            router.push('/app/products');
-
+    
+            if (res.status === 201) {
+                setNewProductData({
+                    name: "",
+                    description: "",
+                    category: "",
+                    price: 0,
+                    quantity: 0,
+                });
+    
+                toast({
+                    title: 'Producto Creado!',
+                    description: "Se creo el producto correctamente.",
+                    status: 'success',
+                    position: 'bottom',
+                    duration: 4000,
+                });
+    
+                router.push('/app/products');
+            } else {
+                toast({
+                    title: json.error || 'Error al crear el producto',
+                    description: res.statusText,
+                    status: 'error',
+                    position: 'bottom',
+                    duration: 4000,
+                });
+            }
         } catch (error) {
             console.error(error);
             toast({
                 title: 'Hubo un error!',
-                description: "Intentalo mas tarde...",
+                description: "Inténtalo más tarde...",
                 status: 'error',
                 position: 'bottom',
                 duration: 4000,

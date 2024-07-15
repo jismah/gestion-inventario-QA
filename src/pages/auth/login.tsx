@@ -2,10 +2,8 @@ import { Button, Divider, TextInput } from "@tremor/react";
 import { NextPage } from "next";
 import { JSX, SVGProps, useEffect, useState } from "react";
 import { useIsOnline } from 'react-use-is-online';
-import Image from 'next/image';
 import { useToast } from "@chakra-ui/react";
-import router from "next/router";
-
+import { useRouter } from "next/router";
 
 const GoogleIcon = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
     <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
@@ -13,17 +11,16 @@ const GoogleIcon = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) =>
     </svg>
 );
 
-
 const Login: NextPage = () => {
-
     const { isOnline, isOffline, error } = useIsOnline();
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
-
     const [loading, setLoading] = useState(false);
     const toast = useToast();
+    const router = useRouter();
 
-    const handleSignIn = async () => {
+    const handleSignIn = async (e: React.FormEvent) => {
+        e.preventDefault();
         setLoading(true);
 
         try {
@@ -32,38 +29,38 @@ const Login: NextPage = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: 'include', // Incluir cookies de sesión
                 body: JSON.stringify({
                     username: user,
                     password: password
                 })
             });
+
             const json = await res.json();
             console.log(json);
 
             if (res.status === 200) {
-                router.push('/app/dashboard');
                 toast({
                     title: "Bienvenido/a a SalesX",
                     status: 'success',
                     position: 'bottom',
                     duration: 4000,
                 });
+                router.push('/app/dashboard');
             } else {
                 toast({
-                    title: json,
-                    description: res.statusText,
+                    title: 'Error de inicio de sesión',
+                    description: json.message || res.statusText,
                     status: 'error',
                     position: 'bottom',
                     duration: 4000,
                 });
             }
-
-
         } catch (error) {
             console.error(error);
             toast({
                 title: 'Hubo un error!',
-                description: "Intentalo mas tarde...",
+                description: "Inténtalo más tarde...",
                 status: 'error',
                 position: 'bottom',
                 duration: 4000,
@@ -87,9 +84,7 @@ const Login: NextPage = () => {
         <>
             <div className="full-screen-div flex min-h-full flex-1 flex-col justify-center px-4 py-10 lg:px-6">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-
-
-                    <form className="mt-6">
+                    <form className="mt-6" onSubmit={handleSignIn}>
                         <div className="col-span-full">
                             <label
                                 htmlFor="user"
@@ -103,15 +98,16 @@ const Login: NextPage = () => {
                                 name="user"
                                 value={user}
                                 onChange={(e) => setUser(e.target.value)}
-                                autoComplete="user"
+                                autoComplete="username"
                                 placeholder="Usuario"
                                 className="mt-2 py-1"
+                                required
                             />
                         </div>
 
                         <div className="mt-3 col-span-full">
                             <label
-                                htmlFor="email"
+                                htmlFor="password"
                                 className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
                             >
                                 Contraseña
@@ -122,23 +118,22 @@ const Login: NextPage = () => {
                                 name="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                autoComplete="password"
+                                autoComplete="current-password"
                                 placeholder="*********"
                                 className="mt-2 py-1"
+                                required
                             />
                         </div>
 
-
+                        <Button
+                            type="submit"
+                            className="mt-4 w-full border-bg-gray-800 bg-gray-800 py-2 text-center text-tremor-default font-medium shadow-tremor-input hover:bg-gray-700 hover:border-bg-gray-700"
+                            loading={loading}
+                            loadingText={'Ingresando...'}
+                        >
+                            Iniciar Sesión
+                        </Button>
                     </form>
-                    <Button
-                        type="submit"
-                        className="mt-4 w-full border-bg-gray-800 bg-gray-800 py-2 text-center text-tremor-default font-medium shadow-tremor-input hover:bg-gray-700 hover:border-bg-gray-700"
-                        loading={loading}
-                        loadingText={'Ingresando...'}
-                        onClick={handleSignIn}
-                    >
-                        Iniciar Sesión
-                    </Button>
                     <p className="mt-4 text-tremor-label text-tremor-content dark:text-dark-tremor-content">
                         Al iniciar sesión, aceptas nuestros{' '}
                         <a href="#" className="underline underline-offset-4">
@@ -153,7 +148,6 @@ const Login: NextPage = () => {
                 </div>
             </div>
         </>
-
     )
 }
 
