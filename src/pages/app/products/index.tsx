@@ -236,14 +236,14 @@ const ProductsIndex: NextPage = () => {
                     </TableCell>
                     <TableCell>{product.quantity}</TableCell>
                     <TableCell>
-                      <Link href={`/app/clients/${product.id}`}>
+                      {/* <Link href={`/app/clients/${product.id}`}>
                         <Button
                           variant="light"
                           className="mx-3"
                           icon={EyeIcon}
                         ></Button>
-                      </Link>
-                      <Link href={`/app/clients/edit/${product.id}`}>
+                      </Link> */}
+                      <Link href={`/app/products/edit/${product.id}`}>
                         <Button
                           variant="light"
                           className="mx-3 text-gray-800"

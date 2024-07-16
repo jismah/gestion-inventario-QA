@@ -19,8 +19,8 @@ const NewClient: NextPage = () => {
     const { data: productData, error: productError, isLoading: productLoading, mutate: productRefresh } = useSWR(`${process.env.NEXT_PUBLIC_SERVER_URL}/products/${id}`, fetcherSWR);
 
     const [loaderProducto, setLoaderProducto] = useState(false);
-    const [categoria, setCategoria] = useState("");
     const [newProductData, setNewProductData] = useState({
+        id: 0,
         name: "",
         description: "",
         category: "",
@@ -31,61 +31,52 @@ const NewClient: NextPage = () => {
     useEffect(() => {
         if (productData) {
             setNewProductData({
+                id: productData.id,
                 name: productData.name || '',
                 description: productData.description || '',
                 category: productData.category || '',
-                price: productData.price || '',
-                quantity: productData.quantity || '',
+                price: productData.price || 0,
+                quantity: productData.quantity || 0,
             });
         }
     }, [productData]);
-
-    const handleChange = (e: any) => {
-        const { name, value } = e.target;
-        setNewProductData({
-            ...productData,
-            [name]: value
-        });
-
-        console.log(productData);
-    };
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         setLoaderProducto(true);
 
-        // const updatedItem = {
-        //     ...productData,
-        //     ...newProductData,
-        //     stock: formData.stock ? parseInt(formData.stock) : null,
-        //     purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : null
-        // };
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/products/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include', // Incluir cookies de sesión
+                body: JSON.stringify(newProductData)
+            });
 
-        // const res = await fetch(`/api/items/${id}`, {
-        //     method: 'PUT',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(updatedItem)
-        // });
+            if (res.ok) {
+                productRefresh();
+                toast({
+                    title: 'Producto Actualizado!',
+                    status: 'success',
+                    position: 'bottom',
+                    duration: 4000,
+                });
+                router.push('/app/products');
+            } else {
+                console.error('Failed to update product');
+            }
+        } catch (error) {
+            console.error('Failed to update product ' + error);
+                toast({
+                    title: 'Hubo un error...',
+                    status: 'error',
+                    position: 'bottom',
+                    duration: 4000,
+                });
+        }
 
-        // if (res.ok) {
-        //     itemRefresh();
-        //     toast({
-        //         title: 'Articulo Actualizado!',
-        //         status: 'success',
-        //         position: 'bottom',
-        //         duration: 4000,
-        //     });
-        // } else {
-        //     console.error('Failed to update item');
-        //     toast({
-        //         title: 'Hubo un error...',
-        //         status: 'error',
-        //         position: 'bottom',
-        //         duration: 4000,
-        //     });
-        // }
 
         setLoaderProducto(false);
     };
@@ -115,10 +106,10 @@ const NewClient: NextPage = () => {
         <>
             <div className="px-4 py-3 ">
                 <h3 className="text-tremor-title font-semibold text-tremor-content-strong">
-                    Nuevo Producto
+                    Editar Producto
                 </h3>
                 <p className="mt-1 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
-                    Para agregar un nuevo producto, rellena el siguiente formulario
+                    Para actualizar un producto, rellena el edita el formulario
                 </p>
                 <form className="mt-6">
                     <div className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-6">
@@ -156,8 +147,8 @@ const NewClient: NextPage = () => {
                                 name="category" 
                                 className="mt-2 py-1"
                                 placeholder="Categorias"
-                                value={categoria || ""}
-                                onValueChange={setCategoria}
+                                value={newProductData.category || ""}
+                                onValueChange={(value: string) => setNewProductData({ ...newProductData, category: value })}
                                 required
                             >
                                 <SelectItem value={"Electronico"}>Electronico</SelectItem>
@@ -240,12 +231,12 @@ const NewClient: NextPage = () => {
                         </Link>
 
                         <Button
-                            className="bg-gray-800 border-gray-800 hover:bg-gray-600 px-10"
-                            
+                            className="bg-gray-800 border-gray-800 hover:bg-gray-600 px-10 hover:border-gray-800"
+                            onClick={handleSubmit}
                             loading={loaderProducto}
                             loadingText={"Creando..."}
                         >
-                            Crear
+                            Actualizar Producto
                         </Button>
                     </div>
                 </form>
