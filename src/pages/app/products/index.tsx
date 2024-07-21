@@ -245,12 +245,14 @@ const ProductsIndex: NextPage = () => {
                       </Link> */}
                       <Link href={`/app/products/edit/${product.id}`}>
                         <Button
+                          id="editProduct"
                           variant="light"
                           className="mx-3 text-gray-800"
                           icon={PencilIcon}
                         ></Button>
                       </Link>
                       <Button
+                        id="deleteProduct"
                         className="mx-3"
                         variant="light"
                         onClick={() => changeSelectedId(product.id)}
@@ -337,6 +339,7 @@ const ProductsIndex: NextPage = () => {
               Cancelar
             </Button>
             <Button
+              id="confirmDelete"
               className="hover:bg-gray-600 px-8 bg-gray-800 border-gray-800"
               onClick={() => handleDeleteProduct(selectedId)}
             >
