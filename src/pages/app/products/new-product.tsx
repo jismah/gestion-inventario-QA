@@ -26,7 +26,8 @@ const NewClient: NextPage = () => {
     description: "",
     category: "",
     price: 0,
-    quantity: 0,
+    stock: 0,
+    min_stock: 3,
   });
 
   const createProduct = async (e: React.FormEvent) => {
@@ -47,7 +48,8 @@ const NewClient: NextPage = () => {
             description: newProductData.description,
             category: categoria,
             price: newProductData.price,
-            quantity: newProductData.quantity,
+            stock: newProductData.stock,
+            min_stock: newProductData.min_stock
           }),
         }
       );
@@ -60,7 +62,8 @@ const NewClient: NextPage = () => {
           description: "",
           category: "",
           price: 0,
-          quantity: 0,
+          stock: 0,
+          min_stock: 0
         });
 
         toast({
@@ -207,18 +210,18 @@ const NewClient: NextPage = () => {
 
             <div className="col-span-full sm:col-span-3">
               <label
-                htmlFor="quantity"
+                htmlFor="stock"
                 className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
               >
                 Cantidad
                 <span className="mx-1 text-red-500">*</span>
               </label>
               <NumberInput
-                id="quantity"
-                name="quantity"
-                value={newProductData.quantity}
+                id="stock"
+                name="stock"
+                value={newProductData.stock}
                 onValueChange={(newValue) =>
-                  setNewProductData({ ...newProductData, quantity: newValue })
+                  setNewProductData({ ...newProductData, stock: newValue })
                 }
                 enableStepper={true}
                 placeholder="Cantidad..."

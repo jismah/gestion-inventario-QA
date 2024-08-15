@@ -93,7 +93,7 @@ const Dashboard: NextPage = () => {
             <div className="px-4 pt-8">
 
                 <div className="grid grid-cols-3 gap-8">
-                    <Link href={'/app/billing/new-sell'}>
+                    <Link href={'/app/products'}>
                         <Card className="mx-auto bg-gray-800 hover:scale-90 transition duration-200 ease-in-out">
                             <div className="flex justify-center">
                                 <Button className="text-white hover:text-white" variant="light" icon={CubeIcon}>Nuevo Producto</Button>

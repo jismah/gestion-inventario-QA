@@ -11,7 +11,10 @@ export interface ProductItem {
     description: string;
     category: string;
     price: number;
-    quantity: number;
+    stock: number;
+    min_stock: number;
+    is_deleted: boolean;
+    created_at: string;
 }
 
 export type Role = 'Admin' | 'Employee' | 'User' | 'Guest';

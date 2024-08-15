@@ -215,6 +215,9 @@ const ProductsIndex: NextPage = () => {
                 Cantidad
               </TableHeaderCell>
               <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                Cant. Minima
+              </TableHeaderCell>
+              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
                 Acciones
               </TableHeaderCell>
             </TableRow>
@@ -234,7 +237,8 @@ const ProductsIndex: NextPage = () => {
                     <TableCell className="font-medium text-tremor-content-strong">
                       {formatCurrency(product.price)}
                     </TableCell>
-                    <TableCell>{product.quantity}</TableCell>
+                    <TableCell>{product.stock}</TableCell>
+                    <TableCell>{product.min_stock}</TableCell>
                     <TableCell>
                       {/* <Link href={`/app/clients/${product.id}`}>
                         <Button
