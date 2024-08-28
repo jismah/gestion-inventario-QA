@@ -40,6 +40,13 @@ const Login: NextPage = () => {
             console.log(json);
 
             if (res.status === 200) {
+
+                /* const authCheck = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/⁠check-auth´`, {
+                    credentials: 'include'
+                });
+                const authJson = await authCheck.json();
+                console.log('Auth check:', authJson); */
+
                 toast({
                     title: "Bienvenido/a a SalesX",
                     status: 'success',

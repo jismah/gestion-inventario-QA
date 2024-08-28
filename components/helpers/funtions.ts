@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ProductItem } from "./interfaces";
 
 export function formatCurrency(amount: number | null): string {
     // Verifica si amount no es undefined antes de formatearlo
@@ -13,13 +14,13 @@ export function formatFrequency(frequency: string | null) {
     if (frequency !== undefined && frequency !== null) {
         if (frequency === "MONTHLY") {
             return "Mensual";
-        } else if (frequency === "WEEKLY"){
+        } else if (frequency === "WEEKLY") {
             return "Semanal";
-        } else if (frequency === "BIWEEKLY"){
+        } else if (frequency === "BIWEEKLY") {
             return "Quincenal";
-        } else if (frequency === "UNIQUE"){
+        } else if (frequency === "UNIQUE") {
             return "Único";
-        } else if (frequency === "YEARLY"){
+        } else if (frequency === "YEARLY") {
             return "Anual";
         }
     } else {
@@ -33,3 +34,19 @@ export const useLoaded = () => {
     useEffect(() => setLoaded(true), []);
     return loaded;
 };
+
+export function filterLowStockProducts(products?: ProductItem[]): ProductItem[] {
+    const lowStockProducts: ProductItem[] = [];
+
+    if (!products) {
+        return lowStockProducts; // Retorna una lista vacía si 'products' es undefined
+    }
+
+    products.forEach(product => {
+        if (product.stock <= product.min_stock) {
+            lowStockProducts.push(product);
+        }
+    });
+
+    return lowStockProducts;
+}

@@ -27,7 +27,7 @@ const NewClient: NextPage = () => {
     category: "",
     price: 0,
     stock: 0,
-    min_stock: 3,
+    min_stock: 0,
   });
 
   const createProduct = async (e: React.FormEvent) => {
@@ -185,7 +185,7 @@ const NewClient: NextPage = () => {
               />
             </div>
 
-            <div className="col-span-full sm:col-span-3">
+            <div className="col-span-full sm:col-span-2">
               <label
                 htmlFor="price"
                 className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
@@ -208,7 +208,7 @@ const NewClient: NextPage = () => {
               />
             </div>
 
-            <div className="col-span-full sm:col-span-3">
+            <div className="col-span-full sm:col-span-2">
               <label
                 htmlFor="stock"
                 className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
@@ -222,6 +222,28 @@ const NewClient: NextPage = () => {
                 value={newProductData.stock}
                 onValueChange={(newValue) =>
                   setNewProductData({ ...newProductData, stock: newValue })
+                }
+                enableStepper={true}
+                placeholder="Cantidad..."
+                className="mt-2 py-1"
+                required
+              />
+            </div>
+
+            <div className="col-span-full sm:col-span-2">
+              <label
+                htmlFor="stock_min"
+                className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
+              >
+                Cantidad Minima
+                <span className="mx-1 text-red-500">*</span>
+              </label>
+              <NumberInput
+                id="stock_min"
+                name="stock_min"
+                value={newProductData.min_stock}
+                onValueChange={(newValue) =>
+                  setNewProductData({ ...newProductData, min_stock: newValue })
                 }
                 enableStepper={true}
                 placeholder="Cantidad..."
@@ -244,7 +266,7 @@ const NewClient: NextPage = () => {
             </Link>
 
             <Button
-            type="submit"
+              type="submit"
               id="submit"
               name="submit"
               className="bg-gray-800 border-gray-800 hover:bg-gray-600 px-10"

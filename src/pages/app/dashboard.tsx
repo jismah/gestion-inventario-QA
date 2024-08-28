@@ -1,27 +1,66 @@
 
-import { Button, Card, List, ListItem } from "@tremor/react";
+import { Button, Card, List, ListItem, MultiSelect, MultiSelectItem, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react";
 import { NextPage } from "next";
-import { BanknotesIcon, ClockIcon, CubeIcon, UserPlusIcon, UsersIcon } from "@heroicons/react/24/solid";
+import { BanknotesIcon, BellAlertIcon, ClockIcon, CubeIcon, EyeIcon, UserPlusIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { userAgent } from "next/server";
 import useSWR from 'swr';
 import { fetcherSWR } from "../../../components/helpers/fetcherSWR";
-import { ProductItem } from "../../../components/helpers/interfaces";
-import { productList } from "../../../components/helpers/fakeData";
+import { ProductItem, StockMovement } from "../../../components/helpers/interfaces";
+import { format } from 'date-fns';
+import { filterLowStockProducts } from "../../../components/helpers/funtions";
 
 
 
 const Dashboard: NextPage = () => {
 
     const { data: products, error: errorProducts, isLoading: loadingProducts, mutate: mutateProducts } = useSWR<ProductItem[]>(`${process.env.NEXT_PUBLIC_SERVER_URL}/products`, fetcherSWR);
+    const { data: StockMovement, error: errorStockMovements, isLoading: loadingStockMovements, mutate: mutateStockMovements } = useSWR<StockMovement[]>(`${process.env.NEXT_PUBLIC_SERVER_URL}/stock-movements`, fetcherSWR);
+
+    const [selectedMovements, setSelectedMovements] = useState<string[]>([]);
+
+
     
 
-    const [userLogged, setUserLogged] = useState("John");
 
-    const isLoading = loadingProducts;
-    const isError = errorProducts;
+    const isMovementsSelected = (movement: StockMovement) =>
+        selectedMovements.includes(movement.Product.name) || selectedMovements.length === 0;
+
+    // PAGINACION
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentMovements =
+        StockMovement?.slice(indexOfFirstItem, indexOfLastItem) || [];
+
+    var totalPages = 0;
+
+    if (selectedMovements.length === 0) {
+        totalPages = Math.ceil((StockMovement?.length ?? 0) / itemsPerPage);
+    } else {
+        totalPages = Math.ceil((selectedMovements?.length ?? 0) / itemsPerPage);
+    }
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+
+
+    const isLoading = loadingProducts || loadingStockMovements;
+    const isError = errorProducts || errorStockMovements;
 
 
 
@@ -61,7 +100,7 @@ const Dashboard: NextPage = () => {
         <>
             <div className="px-4 py-3">
                 <div>
-                    <h1 className="text-2xl font-bold text-tremor-content-strong">Saludos {userLogged}!</h1>
+                    <h1 className="text-2xl font-bold text-tremor-content-strong">Bienvenido a SalesX!</h1>
                     <p className="mt-1 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
                         A continuación, se muestran algunas métricas útiles para el análisis de la empresa.
                     </p>
@@ -69,23 +108,17 @@ const Dashboard: NextPage = () => {
             </div>
 
             {/* KPI's */}
-            <div className="md:grid md:grid-cols-4 md:gap-8 px-4 pt-4 sm:grid sm:grid-cols-2 sm:gap-4">
+            <div className="md:grid md:grid-cols-2 md:gap-8 px-4 pt-4 sm:grid sm:grid-cols-2 sm:gap-4">
                 <Card className="mx-auto">
                     <p className="text-tremor-default text-tremor-content">Productos Registrados</p>
                     <p className="text-3xl text-tremor-content-strong font-semibold">{products?.length}</p>
                 </Card>
                 <Card className="mx-auto">
-                    <p className="text-tremor-default text-tremor-content">KPI #2</p>
-                    <p className="text-3xl text-tremor-content-strong font-semibold">0</p>
+                    <p className="text-tremor-default text-tremor-content">Movimientos Registrados</p>
+                    <p className="text-3xl text-tremor-content-strong font-semibold">{StockMovement?.length}</p>
                 </Card>
-                <Card className="mx-auto">
-                    <p className="text-tremor-default text-tremor-content">KPI #3</p>
-                    <p className="text-3xl text-tremor-content-strong font-semibold">0</p>
-                </Card>
-                <Card className="mx-auto">
-                    <p className="text-tremor-default text-tremor-content">KPI #4</p>
-                    <p className="text-3xl text-tremor-content-strong font-semibold">0</p>
-                </Card>
+
+
 
             </div>
 
@@ -93,31 +126,31 @@ const Dashboard: NextPage = () => {
             <div className="px-4 pt-8">
 
                 <div className="grid grid-cols-3 gap-8">
-                    <Link href={'/app/products'}>
+                    <Link href={'/app/products/new-product'}>
                         <Card className="mx-auto bg-gray-800 hover:scale-90 transition duration-200 ease-in-out">
                             <div className="flex justify-center">
                                 <Button className="text-white hover:text-white" variant="light" icon={CubeIcon}>Nuevo Producto</Button>
                             </div>
                         </Card>
                     </Link>
-                    <Link href={'/app/clients/new-client'}>
+                    <Link href={'/app/products'}>
                         <Card className="mx-auto bg-gray-800 hover:scale-90 transition duration-200 ease-in-out">
                             <div className="flex justify-center">
-                                <Button className="text-white hover:text-white" variant="light" icon={ClockIcon}>Quick Button #2</Button>
+                                <Button className="text-white hover:text-white" variant="light" icon={EyeIcon}>Ver Productos</Button>
                             </div>
                         </Card>
                     </Link>
-                    <Link href={'/app/clients/new-client'}>
+                    <Link href={'/app/'}>
                         <Card className="mx-auto bg-gray-800 hover:scale-90 transition duration-200 ease-in-out">
                             <div className="flex justify-center">
-                                <Button className="text-white hover:text-white" variant="light" icon={ClockIcon}>Quick Button #3</Button>
+                                <Button className="text-white hover:text-white" variant="light" icon={BellAlertIcon}>Registrar Entrada/Salida</Button>
                             </div>
                         </Card>
                     </Link>
                 </div>
-                
-                    
-                
+
+
+
 
 
             </div>
@@ -125,18 +158,64 @@ const Dashboard: NextPage = () => {
             {/* GRAFICOS*/}
             <div className="grid grid-cols-1 px-4 pt-8">
                 <Card className="mx-auto">
-                    <p className=" text-tremor-content-strong font-semibold">GRAFICOS</p>
-                    <div className="mx-auto max-w-md">
-                        {/* <List>
-                            {
-                                subscriptions.map((sub: Subscription) => (
-                                    <ListItem key={sub.id}>
-                                        <span>{sub.clientOwner.name}</span>
-                                        <span>RD$ {sub.amount}</span>
-                                    </ListItem>
-                                ))
-                            }
-                        </List> */}
+                    <p className=" text-tremor-content-strong font-semibold">Historial de Movimientos</p>
+                    <div>
+                        <MultiSelect
+                            placeholder="Buscar..."
+                            className="mt-4 w-full"
+                            onValueChange={setSelectedMovements}
+                        >
+                            {StockMovement?.map((movement: StockMovement) => (
+                                <MultiSelectItem key={movement.id} value={movement.Product.name}>
+                                    {movement.id} | {movement.Product.name}
+                                </MultiSelectItem>
+                            ))}
+                        </MultiSelect>
+                    </div>
+                    <div className="">
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableHeaderCell>ID</TableHeaderCell>
+                                    <TableHeaderCell>
+                                        Producto
+                                    </TableHeaderCell>
+                                    <TableHeaderCell>Cantidad</TableHeaderCell>
+                                    <TableHeaderCell>Movimiento</TableHeaderCell>
+                                    <TableHeaderCell>Usuario</TableHeaderCell>
+                                    <TableHeaderCell>Fecha</TableHeaderCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {currentMovements?.length > 0 ? (
+                                    currentMovements
+                                        ?.filter((movement: StockMovement) => isMovementsSelected(movement))
+                                        .map((movement: StockMovement) => (
+                                            <TableRow key={movement.id}>
+                                                <TableCell className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                                    #{movement.id}
+                                                </TableCell>
+                                                <TableCell>{movement.Product.name}</TableCell>
+                                                <TableCell>{movement.quantity}</TableCell>
+                                                <TableCell>{movement.type}</TableCell>
+
+                                                <TableCell>{movement.User.username}</TableCell>
+                                                <TableCell>{format(movement.createdAt, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+
+                                            </TableRow>
+                                        ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={7}
+                                            className="text-center text-tremor-content-muted dark:text-dark-tremor-content-muted"
+                                        >
+                                            No hay Productos Registrados
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
                     </div>
 
                 </Card>

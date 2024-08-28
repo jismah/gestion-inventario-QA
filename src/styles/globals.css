@@ -17,3 +17,7 @@ html {
     justify-content: center;
     align-items: center;
 }
+
+.notification-body {
+    width: 20rem !important;
+}

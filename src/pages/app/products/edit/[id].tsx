@@ -25,7 +25,7 @@ const NewClient: NextPage = () => {
         description: "",
         category: "",
         price: 0,
-        quantity: 0,
+        stock: 0,
     });
 
     useEffect(() => {
@@ -36,7 +36,7 @@ const NewClient: NextPage = () => {
                 description: productData.description || '',
                 category: productData.category || '',
                 price: productData.price || 0,
-                quantity: productData.quantity || 0,
+                stock: productData.stock || 0,
             });
         }
     }, [productData]);
@@ -198,17 +198,17 @@ const NewClient: NextPage = () => {
                         
                         <div className="col-span-full sm:col-span-3">
                             <label
-                                htmlFor="quantity"
+                                htmlFor="stock"
                                 className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
                             >
                                 Cantidad
                                 <span className="mx-1 text-red-500">*</span>
                             </label>
                             <NumberInput
-                                id="quantity"
-                                name="quantity"
-                                value={newProductData.quantity}
-                                onValueChange={(newValue) => setNewProductData({ ...newProductData, quantity: newValue })}
+                                id="stock"
+                                name="stock"
+                                value={newProductData.stock}
+                                onValueChange={(newValue) => setNewProductData({ ...newProductData, stock: newValue })}
                                 enableStepper={true}
                                 placeholder="Cantidad..."
                                 className="mt-2 py-1"
