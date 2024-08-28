@@ -149,13 +149,9 @@ const Dashboard: NextPage = () => {
                     </Link>
                 </div>
 
-
-
-
-
             </div>
 
-            {/* GRAFICOS*/}
+            {/* HISTORIAL DE MOVIMIENTOS*/}
             <div className="grid grid-cols-1 px-4 pt-8">
                 <Card className="mx-auto">
                     <p className=" text-tremor-content-strong font-semibold">Historial de Movimientos</p>
@@ -167,7 +163,7 @@ const Dashboard: NextPage = () => {
                         >
                             {StockMovement?.map((movement: StockMovement) => (
                                 <MultiSelectItem key={movement.id} value={movement.Product.name}>
-                                    {movement.id} | {movement.Product.name}
+                                    {movement.id} | {movement.Product.name} | {movement.type}
                                 </MultiSelectItem>
                             ))}
                         </MultiSelect>
@@ -180,8 +176,8 @@ const Dashboard: NextPage = () => {
                                     <TableHeaderCell>
                                         Producto
                                     </TableHeaderCell>
-                                    <TableHeaderCell>Cantidad</TableHeaderCell>
-                                    <TableHeaderCell>Movimiento</TableHeaderCell>
+                                    <TableHeaderCell>Cantidad Modificada</TableHeaderCell>
+                                    <TableHeaderCell>Tipo de Movimiento</TableHeaderCell>
                                     <TableHeaderCell>Usuario</TableHeaderCell>
                                     <TableHeaderCell>Fecha</TableHeaderCell>
                                 </TableRow>
