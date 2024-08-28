@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import {
+  Badge,
   Button,
   Card,
   Dialog,
@@ -237,8 +238,16 @@ const ProductsIndex: NextPage = () => {
                     <TableCell className="font-medium text-tremor-content-strong">
                       {formatCurrency(product.price)}
                     </TableCell>
-                    <TableCell>{product.stock}</TableCell>
-                    <TableCell>{product.min_stock}</TableCell>
+                    <TableCell>
+                      <Badge className="font-medium">
+                        {product.stock}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className="font-medium" color={"red"}>
+                        {product.min_stock}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       {/* <Link href={`/app/clients/${product.id}`}>
                         <Button

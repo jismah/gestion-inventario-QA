@@ -14,11 +14,9 @@ import useSWR from 'swr'
 
 
 const navigation: NavigationItem[] = [
-    { name: 'Menú', href: '/app/dashboard', current: true, roles: ['Employee', 'User'] },
+    { name: 'Menú', href: '/app/dashboard', current: true, roles: ['Admin', 'Employee', 'User'] },
     { name: 'Gestión de Productos', href: '/app/products', current: false, roles: ['Admin', 'Employee', 'User'] },
-    { name: 'Control de Stock', href: '/app/inventory', current: false, roles: ['Admin', 'Employee'] },
     // ADMIN ROLE
-    { name: 'Home', href: '/app/admin', current: false, roles: ['Admin'] },
     { name: 'Usuarios', href: '/app/admin/users', current: false, roles: ['Admin'] },
 ];
 
@@ -46,7 +44,7 @@ const Navbar: React.FC = () => {
 
     const toast = useToast();
 
-    const userRole: Role = 'User'; // CAMBIAR AL ROL DEL USUARIO LOGUEADO
+    const userRole: Role = 'Admin'; // CAMBIAR AL ROL DEL USUARIO LOGUEADO
     const filteredNavigation = filterMenuByRole(userRole);
 
     const handleSignOut = async () => {

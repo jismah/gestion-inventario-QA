@@ -26,6 +26,7 @@ const NewClient: NextPage = () => {
         category: "",
         price: 0,
         stock: 0,
+        min_stock: 0
     });
 
     useEffect(() => {
@@ -37,6 +38,7 @@ const NewClient: NextPage = () => {
                 category: productData.category || '',
                 price: productData.price || 0,
                 stock: productData.stock || 0,
+                min_stock: productData.min_stock || 0
             });
         }
     }, [productData]);
@@ -212,7 +214,7 @@ const NewClient: NextPage = () => {
                                 enableStepper={true}
                                 placeholder="Cantidad..."
                                 className="mt-2 py-1"
-                                required />
+                                disabled />
                         </div>
 
 

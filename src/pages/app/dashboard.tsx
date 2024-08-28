@@ -29,6 +29,13 @@ const Dashboard: NextPage = () => {
     const [idProductMovement, setIdProductMovement] = useState("");
     const [quantityMovement, setQuantityMovement] = useState(0);
 
+    var disableMovementBtn = true;
+
+
+    if (!(TypeMovement === "") && !(idProductMovement === "") && !(quantityMovement === 0)) {
+        disableMovementBtn = false;
+    }
+
     const isMovementsSelected = (movement: StockMovement) =>
         selectedMovements.includes(movement.Product.name) || selectedMovements.length === 0;
 
@@ -99,6 +106,29 @@ const Dashboard: NextPage = () => {
 
                 mutateProducts();
                 mutateStockMovements();
+
+                // Revisar el estado del stock del producto
+                const productRes = await fetch(
+                    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/${idProductMovement}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                    }
+                );
+                const productData = await productRes.json();
+
+                if (productData.stock <= productData.min_stock) {
+                    toast({
+                        title: "Advertencia!",
+                        description: `El producto ${productData.name} tiene un stock bajo.`,
+                        status: "warning",
+                        position: "bottom",
+                        duration: 4000,
+                    });
+                }
 
 
             } else {
@@ -374,6 +404,7 @@ const Dashboard: NextPage = () => {
                             className="hover:bg-gray-600 px-8 bg-gray-800 border-gray-800"
                             loading={loaderNewMovement}
                             onClick={createNewMovement}
+                            disabled={disableMovementBtn}
                         >
                             Procesar Movimiento
                         </Button>
