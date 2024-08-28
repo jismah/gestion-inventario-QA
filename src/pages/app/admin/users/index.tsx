@@ -31,6 +31,7 @@ import { fetcherSWR } from "../../../../../components/helpers/fetcherSWR";
 import { formatCurrency } from "../../../../../components/helpers/funtions";
 import { ProductItem, User } from "../../../../../components/helpers/interfaces";
 import ProductsIndex from "../../products";
+import PrivateRoute from "../../../../../components/layouts/PrivateRoute";
 
 
 const UsersIndex: NextPage = () => {
@@ -117,127 +118,129 @@ const UsersIndex: NextPage = () => {
         );
 
     return (
-        <div className="px-4 py-3">
-            <div className="sm:flex sm:items-center sm:justify-between sm:space-x-10">
-                <div>
-                    <h1 className="text-2xl font-bold text-tremor-content-strong">
-                        Usuarios
-                    </h1>
-                    <p className="mt-1 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
-                        Listado general de todos los usuarios registrados.
-                    </p>
-                </div>
-                <Link href={"/app/admin/users/new-user"}>
-                    <button
-                        type="button"
-                        className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-gray-800 px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-gray-600 sm:mt-0 sm:w-fit"
-                    >
-                        Nuevo Usuario
-                    </button>
-                </Link>
-            </div>
-            <div>
-                <MultiSelect
-                    placeholder="Buscar..."
-                    className="mt-4 w-full"
-                    onValueChange={setSelectedUsers}
-                >
-                    {users?.map((user: User) => (
-                        <MultiSelectItem key={user.id} value={user.username}>
-                            {user.username}
-                        </MultiSelectItem>
-                    ))}
-                </MultiSelect>
-            </div>
-            <Card className="mt-8 p-1">
-                <Table>
-                    <TableHead>
-                        <TableRow className="border-b border-tremor-border dark:border-dark-tremor-border">
-                            <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                                ID
-                            </TableHeaderCell>
-                            <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                                Usuario
-                            </TableHeaderCell>
-                            <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                                Rol
-                            </TableHeaderCell>
-                            <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                                Fecha de Creacion
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {currentUsers?.length > 0 ? (
-                            currentUsers
-                                ?.filter((user: User) => isUsersSelected(user))
-                                .map((user: User) => (
-                                    <TableRow key={user.id}>
-                                        <TableCell className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                                            #{user.id}
-                                        </TableCell>
-                                        <TableCell>{user.username}</TableCell>
-                                        <TableCell>{user.role}</TableCell>
-                                        <TableCell>{format(user.createdAt, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    </TableRow>
-                                ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={7}
-                                    className="text-center text-tremor-content-muted dark:text-dark-tremor-content-muted"
-                                >
-                                    No hay Usuarios Registrados
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-
-                <div className="flex justify-between items-center mt-6 mb-2 px-3">
-                    <p className="text-tremor-default tabular-nums text-tremor-content mx-2">
-                        Página{" "}
-                        <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                            {`${currentPage}`}
-                        </span>{" "}
-                        de
-                        <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                            {" "}
-                            {totalPages}
-                        </span>
-                    </p>
-
-                    <div className="inline-flex items-center rounded-tremor-full shadow-tremor-input ring-1 ring-inset ring-tremor-ring">
-                        <button
-                            className="py-2 px-3"
-                            onClick={handlePreviousPage}
-                            disabled={currentPage === 1}
-                        >
-                            <span className="sr-only">Previous</span>
-                            <ArrowLeftIcon
-                                className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
-                                aria-hidden={true}
-                            />
-                        </button>
-                        <span
-                            className="h-5 border-r border-tremor-border dark:border-dark-tremor-border"
-                            aria-hidden={true}
-                        />
-                        <button
-                            className="py-2 px-3"
-                            onClick={handleNextPage}
-                            disabled={currentPage === totalPages}
-                        >
-                            <span className="sr-only">Next</span>
-                            <ArrowRightIcon
-                                className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
-                                aria-hidden={true}
-                            />
-                        </button>
+        <PrivateRoute allowedRoles={['admin']}>
+            <div className="px-4 py-3">
+                <div className="sm:flex sm:items-center sm:justify-between sm:space-x-10">
+                    <div>
+                        <h1 className="text-2xl font-bold text-tremor-content-strong">
+                            Usuarios
+                        </h1>
+                        <p className="mt-1 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
+                            Listado general de todos los usuarios registrados.
+                        </p>
                     </div>
+                    <Link href={"/app/admin/users/new-user"}>
+                        <button
+                            type="button"
+                            className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-gray-800 px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-gray-600 sm:mt-0 sm:w-fit"
+                        >
+                            Nuevo Usuario
+                        </button>
+                    </Link>
                 </div>
-            </Card>
-        </div>
+                <div>
+                    <MultiSelect
+                        placeholder="Buscar..."
+                        className="mt-4 w-full"
+                        onValueChange={setSelectedUsers}
+                    >
+                        {users?.map((user: User) => (
+                            <MultiSelectItem key={user.id} value={user.username}>
+                                {user.username}
+                            </MultiSelectItem>
+                        ))}
+                    </MultiSelect>
+                </div>
+                <Card className="mt-8 p-1">
+                    <Table>
+                        <TableHead>
+                            <TableRow className="border-b border-tremor-border dark:border-dark-tremor-border">
+                                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                    ID
+                                </TableHeaderCell>
+                                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                    Usuario
+                                </TableHeaderCell>
+                                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                    Rol
+                                </TableHeaderCell>
+                                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                    Fecha de Creacion
+                                </TableHeaderCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {currentUsers?.length > 0 ? (
+                                currentUsers
+                                    ?.filter((user: User) => isUsersSelected(user))
+                                    .map((user: User) => (
+                                        <TableRow key={user.id}>
+                                            <TableCell className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                                #{user.id}
+                                            </TableCell>
+                                            <TableCell>{user.username}</TableCell>
+                                            <TableCell>{user.role}</TableCell>
+                                            <TableCell>{format(user.createdAt, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                        </TableRow>
+                                    ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={7}
+                                        className="text-center text-tremor-content-muted dark:text-dark-tremor-content-muted"
+                                    >
+                                        No hay Usuarios Registrados
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+
+                    <div className="flex justify-between items-center mt-6 mb-2 px-3">
+                        <p className="text-tremor-default tabular-nums text-tremor-content mx-2">
+                            Página{" "}
+                            <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                {`${currentPage}`}
+                            </span>{" "}
+                            de
+                            <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                                {" "}
+                                {totalPages}
+                            </span>
+                        </p>
+
+                        <div className="inline-flex items-center rounded-tremor-full shadow-tremor-input ring-1 ring-inset ring-tremor-ring">
+                            <button
+                                className="py-2 px-3"
+                                onClick={handlePreviousPage}
+                                disabled={currentPage === 1}
+                            >
+                                <span className="sr-only">Previous</span>
+                                <ArrowLeftIcon
+                                    className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
+                                    aria-hidden={true}
+                                />
+                            </button>
+                            <span
+                                className="h-5 border-r border-tremor-border dark:border-dark-tremor-border"
+                                aria-hidden={true}
+                            />
+                            <button
+                                className="py-2 px-3"
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                            >
+                                <span className="sr-only">Next</span>
+                                <ArrowRightIcon
+                                    className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
+                                    aria-hidden={true}
+                                />
+                            </button>
+                        </div>
+                    </div>
+                </Card>
+            </div>
+        </PrivateRoute>
     );
 };
 

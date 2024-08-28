@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useIsOnline } from "react-use-is-online";
+import PrivateRoute from "../../../../../components/layouts/PrivateRoute";
 
 const NewUser: NextPage = () => {
     const { isOnline, isOffline, error } = useIsOnline();
@@ -96,7 +97,7 @@ const NewUser: NextPage = () => {
         );
 
     return (
-        <>
+        <PrivateRoute allowedRoles={['admin']}>
             <div className="px-4 py-3 ">
                 <h3 className="text-tremor-title font-semibold text-tremor-content-strong">
                     Nuevo Usuario
@@ -202,7 +203,7 @@ const NewUser: NextPage = () => {
                     </div>
                 </form>
             </div>
-        </>
+        </PrivateRoute>
     );
 };
 

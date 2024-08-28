@@ -12,6 +12,7 @@ import { ProductItem, StockMovement } from "../../../components/helpers/interfac
 import { format } from 'date-fns';
 import { filterLowStockProducts } from "../../../components/helpers/funtions";
 import { useToast } from "@chakra-ui/react";
+import PrivateRoute from "../../../components/layouts/PrivateRoute";
 
 
 
@@ -191,7 +192,7 @@ const Dashboard: NextPage = () => {
 
 
     return (
-        <>
+        <PrivateRoute allowedRoles={['admin', 'employee', 'guest']}>
             <div className="px-4 py-3">
                 <div>
                     <h1 className="text-2xl font-bold text-tremor-content-strong">Bienvenido a SalesX!</h1>
@@ -412,7 +413,7 @@ const Dashboard: NextPage = () => {
                 </DialogPanel>
             </Dialog>
 
-        </>
+        </PrivateRoute>
     )
 }
 

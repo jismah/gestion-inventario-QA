@@ -29,6 +29,7 @@ import useSWR from "swr";
 import { fetcherSWR } from "../../../../components/helpers/fetcherSWR";
 import { ProductItem } from "../../../../components/helpers/interfaces";
 import { formatCurrency } from "../../../../components/helpers/funtions";
+import PrivateRoute from "../../../../components/layouts/PrivateRoute";
 
 const ProductsIndex: NextPage = () => {
   const [selectedId, setSelectedId] = useState(0);
@@ -161,207 +162,209 @@ const ProductsIndex: NextPage = () => {
     );
 
   return (
-    <div className="px-4 py-3">
-      <div className="sm:flex sm:items-center sm:justify-between sm:space-x-10">
-        <div>
-          <h1 className="text-2xl font-bold text-tremor-content-strong">
-            Productos
-          </h1>
-          <p className="mt-1 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
-            Listado general de todos los productos registrados.
-          </p>
+    <PrivateRoute allowedRoles={['admin', 'employee', 'guest']}>
+      <div className="px-4 py-3">
+        <div className="sm:flex sm:items-center sm:justify-between sm:space-x-10">
+          <div>
+            <h1 className="text-2xl font-bold text-tremor-content-strong">
+              Productos
+            </h1>
+            <p className="mt-1 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
+              Listado general de todos los productos registrados.
+            </p>
+          </div>
+          <Link href={"/app/products/new-product"}>
+            <button
+              type="button"
+              className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-gray-800 px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-gray-600 sm:mt-0 sm:w-fit"
+            >
+              Nuevo Producto
+            </button>
+          </Link>
         </div>
-        <Link href={"/app/products/new-product"}>
-          <button
-            type="button"
-            className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-gray-800 px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-gray-600 sm:mt-0 sm:w-fit"
+        <div>
+          <MultiSelect
+            placeholder="Buscar..."
+            className="mt-4 w-full"
+            onValueChange={setSelectedProducts}
           >
-            Nuevo Producto
-          </button>
-        </Link>
-      </div>
-      <div>
-        <MultiSelect
-          placeholder="Buscar..."
-          className="mt-4 w-full"
-          onValueChange={setSelectedProducts}
-        >
-          {products?.map((product: ProductItem) => (
-            <MultiSelectItem key={product.id} value={product.name}>
-              {product.name}
-            </MultiSelectItem>
-          ))}
-        </MultiSelect>
-      </div>
-      <Card className="mt-8 p-1">
-        <Table>
-          <TableHead>
-            <TableRow className="border-b border-tremor-border dark:border-dark-tremor-border">
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                ID
-              </TableHeaderCell>
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                Producto
-              </TableHeaderCell>
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                Descripción
-              </TableHeaderCell>
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                Categoría
-              </TableHeaderCell>
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                Precio
-              </TableHeaderCell>
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                Cantidad
-              </TableHeaderCell>
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                Cant. Minima
-              </TableHeaderCell>
-              <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                Acciones
-              </TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {currentProducts?.length > 0 ? (
-              currentProducts
-                ?.filter((product: ProductItem) => isProductsSelected(product))
-                .map((product: ProductItem) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                      #{product.id}
-                    </TableCell>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>{product.description}</TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell className="font-medium text-tremor-content-strong">
-                      {formatCurrency(product.price)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="font-medium">
-                        {product.stock}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="font-medium" color={"red"}>
-                        {product.min_stock}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {/* <Link href={`/app/clients/${product.id}`}>
+            {products?.map((product: ProductItem) => (
+              <MultiSelectItem key={product.id} value={product.name}>
+                {product.name}
+              </MultiSelectItem>
+            ))}
+          </MultiSelect>
+        </div>
+        <Card className="mt-8 p-1">
+          <Table>
+            <TableHead>
+              <TableRow className="border-b border-tremor-border dark:border-dark-tremor-border">
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  ID
+                </TableHeaderCell>
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Producto
+                </TableHeaderCell>
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Descripción
+                </TableHeaderCell>
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Categoría
+                </TableHeaderCell>
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Precio
+                </TableHeaderCell>
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Cantidad
+                </TableHeaderCell>
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Cant. Minima
+                </TableHeaderCell>
+                <TableHeaderCell className="text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Acciones
+                </TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {currentProducts?.length > 0 ? (
+                currentProducts
+                  ?.filter((product: ProductItem) => isProductsSelected(product))
+                  .map((product: ProductItem) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                        #{product.id}
+                      </TableCell>
+                      <TableCell>{product.name}</TableCell>
+                      <TableCell>{product.description}</TableCell>
+                      <TableCell>{product.category}</TableCell>
+                      <TableCell className="font-medium text-tremor-content-strong">
+                        {formatCurrency(product.price)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="font-medium">
+                          {product.stock}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="font-medium" color={"red"}>
+                          {product.min_stock}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {/* <Link href={`/app/clients/${product.id}`}>
                         <Button
                           variant="light"
                           className="mx-3"
                           icon={EyeIcon}
                         ></Button>
                       </Link> */}
-                      <Link href={`/app/products/edit/${product.id}`}>
+                        <Link href={`/app/products/edit/${product.id}`}>
+                          <Button
+                            id="editProduct"
+                            variant="light"
+                            className="mx-3 text-gray-800"
+                            icon={PencilIcon}
+                          ></Button>
+                        </Link>
                         <Button
-                          id="editProduct"
+                          id="deleteProduct"
+                          className="mx-3"
                           variant="light"
-                          className="mx-3 text-gray-800"
-                          icon={PencilIcon}
+                          onClick={() => changeSelectedId(product.id)}
+                          color="red"
+                          icon={TrashIcon}
                         ></Button>
-                      </Link>
-                      <Button
-                        id="deleteProduct"
-                        className="mx-3"
-                        variant="light"
-                        onClick={() => changeSelectedId(product.id)}
-                        color="red"
-                        icon={TrashIcon}
-                      ></Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-tremor-content-muted dark:text-dark-tremor-content-muted"
-                >
-                  No hay Productos Registrados
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                      </TableCell>
+                    </TableRow>
+                  ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-tremor-content-muted dark:text-dark-tremor-content-muted"
+                  >
+                    No hay Productos Registrados
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
 
-        <div className="flex justify-between items-center mt-6 mb-2 px-3">
-          <p className="text-tremor-default tabular-nums text-tremor-content mx-2">
-            Página{" "}
-            <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-              {`${currentPage}`}
-            </span>{" "}
-            de
-            <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-              {" "}
-              {totalPages}
-            </span>
-          </p>
+          <div className="flex justify-between items-center mt-6 mb-2 px-3">
+            <p className="text-tremor-default tabular-nums text-tremor-content mx-2">
+              Página{" "}
+              <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                {`${currentPage}`}
+              </span>{" "}
+              de
+              <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                {" "}
+                {totalPages}
+              </span>
+            </p>
 
-          <div className="inline-flex items-center rounded-tremor-full shadow-tremor-input ring-1 ring-inset ring-tremor-ring">
-            <button
-              className="py-2 px-3"
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-            >
-              <span className="sr-only">Previous</span>
-              <ArrowLeftIcon
-                className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
+            <div className="inline-flex items-center rounded-tremor-full shadow-tremor-input ring-1 ring-inset ring-tremor-ring">
+              <button
+                className="py-2 px-3"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
+                <span className="sr-only">Previous</span>
+                <ArrowLeftIcon
+                  className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
+                  aria-hidden={true}
+                />
+              </button>
+              <span
+                className="h-5 border-r border-tremor-border dark:border-dark-tremor-border"
                 aria-hidden={true}
               />
-            </button>
-            <span
-              className="h-5 border-r border-tremor-border dark:border-dark-tremor-border"
-              aria-hidden={true}
-            />
-            <button
-              className="py-2 px-3"
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              <span className="sr-only">Next</span>
-              <ArrowRightIcon
-                className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
-                aria-hidden={true}
-              />
-            </button>
+              <button
+                className="py-2 px-3"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                <span className="sr-only">Next</span>
+                <ArrowRightIcon
+                  className="h-5 w-5 text-tremor-content-emphasis group-hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis group-hover:dark:text-dark-tremor-content-strong"
+                  aria-hidden={true}
+                />
+              </button>
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      {/* CONFIRMACION DE ELIMINAR PRODUCTO */}
+        {/* CONFIRMACION DE ELIMINAR PRODUCTO */}
 
-      <Dialog open={isOpen} onClose={(val) => setIsOpen(val)} static={true}>
-        <DialogPanel>
-          <h3 className="text-lg font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-            Confirmación de Borrado
-          </h3>
-          <p className="mt-2 leading-6 text-tremor-default text-tremor-content dark:text-dark-tremor-content">
-            Si deseas borrar este producto permanentemente, selecciona
-            "Eliminar".
-          </p>
-          <div className="mt-8 flex items-center justify-end space-x-2">
-            <Button
-              variant="light"
-              className="px-4 text-black"
-              onClick={() => setIsOpen(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              id="confirmDelete"
-              className="hover:bg-gray-600 px-8 bg-gray-800 border-gray-800"
-              onClick={() => handleDeleteProduct(selectedId)}
-            >
-              Eliminar
-            </Button>
-          </div>
-        </DialogPanel>
-      </Dialog>
-    </div>
+        <Dialog open={isOpen} onClose={(val) => setIsOpen(val)} static={true}>
+          <DialogPanel>
+            <h3 className="text-lg font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
+              Confirmación de Borrado
+            </h3>
+            <p className="mt-2 leading-6 text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+              Si deseas borrar este producto permanentemente, selecciona
+              "Eliminar".
+            </p>
+            <div className="mt-8 flex items-center justify-end space-x-2">
+              <Button
+                variant="light"
+                className="px-4 text-black"
+                onClick={() => setIsOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                id="confirmDelete"
+                className="hover:bg-gray-600 px-8 bg-gray-800 border-gray-800"
+                onClick={() => handleDeleteProduct(selectedId)}
+              >
+                Eliminar
+              </Button>
+            </div>
+          </DialogPanel>
+        </Dialog>
+      </div>
+    </PrivateRoute>
   );
 };
 

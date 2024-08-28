@@ -11,13 +11,14 @@ import { filterLowStockProducts, useLoaded } from '../helpers/funtions'
 import { NavigationItem, ProductItem, Role } from '../helpers/interfaces'
 import { fetcherSWR } from '../helpers/fetcherSWR'
 import useSWR from 'swr'
+import { useAuth } from '../../context/AuthContext'
 
 
 const navigation: NavigationItem[] = [
-    { name: 'Menú', href: '/app/dashboard', current: true, roles: ['Admin', 'Employee', 'User'] },
-    { name: 'Gestión de Productos', href: '/app/products', current: false, roles: ['Admin', 'Employee', 'User'] },
+    { name: 'Menú', href: '/app/dashboard', current: true, roles: ['admin', 'employee', 'guest'] },
+    { name: 'Gestión de Productos', href: '/app/products', current: false, roles: ['admin', 'employee', 'guest'] },
     // ADMIN ROLE
-    { name: 'Usuarios', href: '/app/admin/users', current: false, roles: ['Admin'] },
+    { name: 'Usuarios', href: '/app/admin/users', current: false, roles: ['admin'] },
 ];
 
 function classNames(...classes: any[]) {
@@ -36,18 +37,18 @@ const Navbar: React.FC = () => {
     const lowStockProducts = filterLowStockProducts(products);
 
     const router = useRouter();
-
-    const { isOnline, isOffline, error } = useIsOnline();
-    const loaded = useLoaded();
-
-
+    const { user } = useAuth();
 
     const toast = useToast();
 
-    const userRole: Role = 'Admin'; // CAMBIAR AL ROL DEL USUARIO LOGUEADO
+    const userRole: Role = user?.role ?? "guest";
     const filteredNavigation = filterMenuByRole(userRole);
+    const { logout } = useAuth();
 
     const handleSignOut = async () => {
+
+        logout();
+
         toast({
             title: 'Cerrando Sesion...',
             status: 'loading',

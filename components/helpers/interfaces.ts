@@ -39,9 +39,9 @@ export interface User {
   id: number;
   username: string;
   password: string;
-  role: string;
+  role: Role;
   createdAt: string;
   updatedAt: string;
 }
 
-export type Role = 'Admin' | 'Employee' | 'User' | 'Guest';
+export type Role = 'admin' | 'employee' | 'guest';

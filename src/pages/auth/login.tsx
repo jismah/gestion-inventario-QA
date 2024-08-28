@@ -4,6 +4,10 @@ import { JSX, SVGProps, useEffect, useState } from "react";
 import { useIsOnline } from 'react-use-is-online';
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useAuth } from "../../../context/AuthContext";
+import useSWR from "swr";
+import { fetcherSWR } from "../../../components/helpers/fetcherSWR";
+import { User } from "../../../components/helpers/interfaces";
 
 const GoogleIcon = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
     <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
@@ -13,11 +17,22 @@ const GoogleIcon = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) =>
 
 const Login: NextPage = () => {
     const { isOnline, isOffline, error } = useIsOnline();
-    const [user, setUser] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const toast = useToast();
     const router = useRouter();
+    const { setUser } = useAuth();
+
+    const {
+        data: users,
+        error: errorUsers,
+        isLoading: loadingUsers,
+        mutate: mutateUsers,
+    } = useSWR<User[]>(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/users`,
+        fetcherSWR
+    );
 
     const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,7 +46,7 @@ const Login: NextPage = () => {
                 },
                 credentials: 'include', // Incluir cookies de sesión
                 body: JSON.stringify({
-                    username: user,
+                    username: username,
                     password: password
                 })
             });
@@ -41,11 +56,11 @@ const Login: NextPage = () => {
 
             if (res.status === 200) {
 
-                /* const authCheck = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/⁠check-auth´`, {
-                    credentials: 'include'
-                });
-                const authJson = await authCheck.json();
-                console.log('Auth check:', authJson); */
+                const user = users?.find(user => user.username === username);
+                if (user) {
+                    setUser(user);
+                }
+
 
                 toast({
                     title: "Bienvenido/a a SalesX",
@@ -103,8 +118,8 @@ const Login: NextPage = () => {
                                 type="text"
                                 id="user"
                                 name="user"
-                                value={user}
-                                onChange={(e) => setUser(e.target.value)}
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 autoComplete="username"
                                 placeholder="Usuario"
                                 className="mt-2 py-1"

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useIsOnline } from "react-use-is-online";
 import useSWR from "swr";
 import { fetcherSWR } from "../../../../../components/helpers/fetcherSWR";
+import PrivateRoute from "../../../../../components/layouts/PrivateRoute";
 
 const NewClient: NextPage = () => {
 
@@ -105,7 +106,7 @@ const NewClient: NextPage = () => {
     )
 
     return (
-        <>
+        <PrivateRoute allowedRoles={['admin', 'employee']}>
             <div className="px-4 py-3 ">
                 <h3 className="text-tremor-title font-semibold text-tremor-content-strong">
                     Editar Producto
@@ -243,7 +244,7 @@ const NewClient: NextPage = () => {
                     </div>
                 </form>
             </div>
-        </>
+        </PrivateRoute>
     )
 }
 
