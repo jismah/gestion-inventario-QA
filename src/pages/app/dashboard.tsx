@@ -1,7 +1,7 @@
 
-import { Button, Card, List, ListItem, MultiSelect, MultiSelectItem, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react";
+import { Button, Card, Dialog, DialogPanel, List, ListItem, MultiSelect, MultiSelectItem, NumberInput, Select, SelectItem, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextInput } from "@tremor/react";
 import { NextPage } from "next";
-import { BanknotesIcon, BellAlertIcon, ClockIcon, CubeIcon, EyeIcon, UserPlusIcon, UsersIcon } from "@heroicons/react/24/solid";
+import { BanknotesIcon, BellAlertIcon, ClockIcon, CubeIcon, CurrencyDollarIcon, EyeIcon, UserPlusIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -11,6 +11,7 @@ import { fetcherSWR } from "../../../components/helpers/fetcherSWR";
 import { ProductItem, StockMovement } from "../../../components/helpers/interfaces";
 import { format } from 'date-fns';
 import { filterLowStockProducts } from "../../../components/helpers/funtions";
+import { useToast } from "@chakra-ui/react";
 
 
 
@@ -20,10 +21,13 @@ const Dashboard: NextPage = () => {
     const { data: StockMovement, error: errorStockMovements, isLoading: loadingStockMovements, mutate: mutateStockMovements } = useSWR<StockMovement[]>(`${process.env.NEXT_PUBLIC_SERVER_URL}/stock-movements`, fetcherSWR);
 
     const [selectedMovements, setSelectedMovements] = useState<string[]>([]);
+    const [isOpen, setIsOpen] = useState(false);
+    const [loaderNewMovement, setLoaderNewMovement] = useState(false);
+    const toast = useToast();
 
-
-    
-
+    const [TypeMovement, setTypeMovement] = useState("");
+    const [idProductMovement, setIdProductMovement] = useState("");
+    const [quantityMovement, setQuantityMovement] = useState(0);
 
     const isMovementsSelected = (movement: StockMovement) =>
         selectedMovements.includes(movement.Product.name) || selectedMovements.length === 0;
@@ -57,7 +61,67 @@ const Dashboard: NextPage = () => {
         }
     };
 
+    const createNewMovement = async (e: React.FormEvent) => {
+        setLoaderNewMovement(true);
+        e.preventDefault();
 
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/stock-movements/update-stock/${idProductMovement}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        quantity: quantityMovement,
+                        type: TypeMovement,
+                    }),
+                }
+            );
+            const json = await res.json();
+            console.log(json);
+
+            if (res.status === 200) {
+                setIdProductMovement("");
+                setQuantityMovement(0);
+                setTypeMovement("");
+
+                setIsOpen(false);
+
+                toast({
+                    title: "Movimiento de Producto Creado!",
+                    status: "success",
+                    position: "bottom",
+                    duration: 4000,
+                });
+
+                mutateProducts();
+                mutateStockMovements();
+
+
+            } else {
+                toast({
+                    title: json.error || "Error al crear movimiento",
+                    description: res.statusText,
+                    status: "error",
+                    position: "bottom",
+                    duration: 4000,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: "Hubo un error!",
+                description: "Inténtalo más tarde...",
+                status: "error",
+                position: "bottom",
+                duration: 4000,
+            });
+        }
+        setLoaderNewMovement(false);
+    }
 
     const isLoading = loadingProducts || loadingStockMovements;
     const isError = errorProducts || errorStockMovements;
@@ -140,19 +204,19 @@ const Dashboard: NextPage = () => {
                             </div>
                         </Card>
                     </Link>
-                    <Link href={'/app/'}>
-                        <Card className="mx-auto bg-gray-800 hover:scale-90 transition duration-200 ease-in-out">
-                            <div className="flex justify-center">
-                                <Button className="text-white hover:text-white" variant="light" icon={BellAlertIcon}>Registrar Entrada/Salida</Button>
-                            </div>
-                        </Card>
-                    </Link>
+
+                    <Card className="mx-auto bg-gray-800 hover:scale-90 transition duration-200 ease-in-out cursor-pointer" onClick={() => setIsOpen(true)}>
+                        <div className="flex justify-center">
+                            <Button className="text-white hover:text-white" variant="light" icon={BellAlertIcon}>Registrar Entrada/Salida</Button>
+                        </div>
+                    </Card>
+
                 </div>
 
             </div>
 
             {/* HISTORIAL DE MOVIMIENTOS*/}
-            <div className="grid grid-cols-1 px-4 pt-8">
+            <div className="grid grid-cols-1 px-4 pt-8 pb-4">
                 <Card className="mx-auto">
                     <p className=" text-tremor-content-strong font-semibold">Historial de Movimientos</p>
                     <div>
@@ -218,7 +282,104 @@ const Dashboard: NextPage = () => {
             </div>
 
 
+            {/* REGISTRO DE ENTRADA/SALIDA */}
 
+            <Dialog open={isOpen} onClose={(val) => setIsOpen(val)} static={true}>
+                <DialogPanel>
+                    <h3 className="text-xl font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong mb-3">
+                        Registro de Entrada/Salida de Producto
+                    </h3>
+
+                    <div className="col-span-full">
+                        <label
+                            htmlFor="product"
+                            className="text-tremor-default font-medium text-tremor-content-strong"
+                        >
+                            Producto
+                            <span className="mx-1 text-red-500">*</span>
+                        </label>
+                        <Select
+                            id="product"
+                            name="product"
+                            className="mt-2 py-1"
+                            placeholder="Productos"
+                            value={idProductMovement}
+                            onValueChange={setIdProductMovement}
+                            required
+                        >
+                            {products?.map((product: ProductItem) => (
+                                <SelectItem key={product.id} value={String(product.id)}>
+                                    {product.name}
+                                </SelectItem>
+                            ))}
+                        </Select>
+
+                    </div>
+
+                    <div className="col-span-full mt-3">
+                        <label
+                            htmlFor="cantidad"
+                            className="text-tremor-default font-medium text-tremor-content-strong"
+                        >
+                            Cantidad
+                            <span className="mx-1 text-red-500">*</span>
+                        </label>
+                        <NumberInput
+                            id="cantidad"
+                            name="cantidad"
+                            placeholder="Precio..."
+                            className="mt-2 py-1"
+                            min={0}
+                            value={quantityMovement}
+                            onValueChange={(newValue) =>
+                                setQuantityMovement(newValue)
+                            }
+                            required
+                        />
+                    </div>
+
+                    <div className="col-span-full mt-3">
+                        <label
+                            htmlFor="TypeMovement"
+                            className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong"
+                        >
+                            Tipo de Movimiento
+                            <span className="mx-1 text-red-500">*</span>
+                        </label>
+                        <Select
+                            id="TypeMovement"
+                            name="TypeMovement"
+                            className="mt-2 py-1"
+                            placeholder="Movimientos"
+                            value={TypeMovement || ""}
+                            onValueChange={setTypeMovement}
+                            required
+                        >
+                            <SelectItem value={"entrada"}>Entrada</SelectItem>
+                            <SelectItem value={"salida"}>Salida</SelectItem>
+                        </Select>
+                    </div>
+
+
+                    <div className="mt-8 flex items-center justify-end space-x-2">
+                        <Button
+                            variant="light"
+                            className="px-4 text-black"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            id="confirmDelete"
+                            className="hover:bg-gray-600 px-8 bg-gray-800 border-gray-800"
+                            loading={loaderNewMovement}
+                            onClick={createNewMovement}
+                        >
+                            Procesar Movimiento
+                        </Button>
+                    </div>
+                </DialogPanel>
+            </Dialog>
 
         </>
     )
