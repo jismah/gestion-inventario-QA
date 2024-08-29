@@ -68,7 +68,13 @@ const Login: NextPage = () => {
                     position: 'bottom',
                     duration: 4000,
                 });
-                router.push('/app/dashboard');
+
+                if (user?.role === 'guest') {
+                    router.push('/app/products');
+                } else {
+                    router.push('/app/dashboard');
+                }
+
             } else {
                 toast({
                     title: 'Error de inicio de sesión',

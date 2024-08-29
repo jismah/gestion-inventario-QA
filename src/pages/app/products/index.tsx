@@ -30,6 +30,7 @@ import { fetcherSWR } from "../../../../components/helpers/fetcherSWR";
 import { ProductItem } from "../../../../components/helpers/interfaces";
 import { formatCurrency } from "../../../../components/helpers/funtions";
 import PrivateRoute from "../../../../components/layouts/PrivateRoute";
+import { useAuth } from "../../../../context/AuthContext";
 
 const ProductsIndex: NextPage = () => {
   const [selectedId, setSelectedId] = useState(0);
@@ -38,6 +39,7 @@ const ProductsIndex: NextPage = () => {
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const { user } = useAuth();
 
   const changeSelectedId = (id: number) => {
     setIsOpen(true);
@@ -173,14 +175,18 @@ const ProductsIndex: NextPage = () => {
               Listado general de todos los productos registrados.
             </p>
           </div>
-          <Link href={"/app/products/new-product"}>
-            <button
-              type="button"
-              className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-gray-800 px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-gray-600 sm:mt-0 sm:w-fit"
-            >
-              Nuevo Producto
-            </button>
-          </Link>
+
+          {(user?.role === 'admin' || user?.role === 'employee') && (
+            <Link href={"/app/products/new-product"}>
+              <button
+                type="button"
+                className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-gray-800 px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-gray-600 sm:mt-0 sm:w-fit"
+              >
+                Nuevo Producto
+              </button>
+            </Link>
+          )}
+
         </div>
         <div>
           <MultiSelect
@@ -251,29 +257,26 @@ const ProductsIndex: NextPage = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {/* <Link href={`/app/clients/${product.id}`}>
-                        <Button
-                          variant="light"
-                          className="mx-3"
-                          icon={EyeIcon}
-                        ></Button>
-                      </Link> */}
-                        <Link href={`/app/products/edit/${product.id}`}>
-                          <Button
-                            id="editProduct"
-                            variant="light"
-                            className="mx-3 text-gray-800"
-                            icon={PencilIcon}
-                          ></Button>
-                        </Link>
-                        <Button
-                          id="deleteProduct"
-                          className="mx-3"
-                          variant="light"
-                          onClick={() => changeSelectedId(product.id)}
-                          color="red"
-                          icon={TrashIcon}
-                        ></Button>
+                        {(user?.role === 'admin' || user?.role === 'employee') && (
+                          <>
+                            <Link href={`/app/products/edit/${product.id}`}>
+                              <Button
+                                id="editProduct"
+                                variant="light"
+                                className="mx-3 text-gray-800"
+                                icon={PencilIcon}
+                              ></Button>
+                            </Link>
+                            <Button
+                              id="deleteProduct"
+                              className="mx-3"
+                              variant="light"
+                              onClick={() => changeSelectedId(product.id)}
+                              color="red"
+                              icon={TrashIcon}
+                            ></Button>
+                          </>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))
